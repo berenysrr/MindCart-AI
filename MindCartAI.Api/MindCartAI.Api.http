@@ -1,0 +1,6 @@
+@MindCartAI.Api_HostAddress = http://localhost:5222
+
+GET {{MindCartAI.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
