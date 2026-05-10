@@ -15,4 +15,5 @@ public class ApplicationDbContext : DbContext
     public DbSet<ProductAnalysis> ProductAnalyses { get; set; }
     public DbSet<CoolDownItem> CoolDownItems { get; set; }
     public DbSet<ChatMessage> ChatMessages { get; set; }
+    public DbSet<AppUser> AppUsers { get; set; }
 }
