@@ -56,6 +56,9 @@ public class GeminiService : IGeminiService
 
             Yanıtını Türkçe ver.
             Kısa ama net bir finalRecommendation üret.
+            FinalRecommendation en fazla 5 cümle olsun.
+            Önce kısa karar ver: "Bekle", "Karşılaştır", "Mantıklı görünüyor" gibi.
+            Sonra 2-3 cümleyle gerekçelendir.
             """;
 
             var response = await _client.Models.GenerateContentAsync(
