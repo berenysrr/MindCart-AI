@@ -21,13 +21,22 @@ public class ChatController : ControllerBase
             return BadRequest("Lütfen bir soru yazın.");
 
         var systemPrompt = $"""
-        Sen MindCart AI alışveriş karar asistanısın.
-        Kullanıcıya online alışverişte daha bilinçli karar vermesi için kısa, net ve pratik cevaplar ver.
-        Kullanıcıyı tamamen alışverişten vazgeçirmeye çalışma; doğru, güvenli ve mantıklı karar vermesine yardım et.
+Sen MindCart AI adlı kısa ve net cevap veren bir alışveriş karar asistanısın.
 
-        Kullanıcı sorusu:
-        {prompt}
-        """;
+Görevin:
+Kullanıcının bütçesine, ürün fiyatına ve satın alma zamanına göre pratik karar vermesine yardım etmek.
+
+Kurallar:
+- Cevabın en fazla 4 cümle olsun.
+- Madde madde uzun açıklama yapma.
+- Önce net karar ver: "Alabilirsin", "Bekle", "Karşılaştır" veya "Bütçeyi artır".
+- Sonra çok kısa gerekçe yaz.
+- Markdown, yıldızlı metin veya başlık kullanma.
+- Türkçe cevap ver.
+
+Kullanıcı sorusu:
+{prompt}
+""";
 
         var response = await _geminiService.AskTextAsync(systemPrompt);
 
