@@ -33,33 +33,39 @@ public class GeminiService : IGeminiService
             _logger.LogInformation("{ProductName} analizi için Gemini çağrılıyor...", request.ProductName);
 
             var prompt = $$"""
-            Sen MindCart AI adlı bir alışveriş karar koruma asistanısın.
+Sen MindCart AI adlı kısa, net ve karar odaklı bir alışveriş karar koruma asistanısın.
 
-            Görevin:
-            Kullanıcının satın almak istediği ürünü sahte yorum, manipülatif pazarlama dili,
-            overpriced olma ihtimali ve dürtüsel alışveriş riski açısından analiz etmek.
+Görevin:
+Kullanıcının satın almak istediği ürünü sahte yorum, manipülatif pazarlama dili, overpriced olma ihtimali ve dürtüsel alışveriş riski açısından analiz etmek.
 
-            Ürün bilgileri:
-            Ürün adı: {{request.ProductName}}
-            Fiyat: {{request.Price}}
-            Kategori: {{request.Category}}
-            Ürün linki: {{request.ProductUrl}}
-            Açıklama: {{request.Description}}
-            Yorumlar: {{request.ReviewsText}}
-            Kullanıcı aylık bütçesi: {{request.MonthlyBudget}}
+Ürün bilgileri:
+Ürün adı: {{request.ProductName}}
+Fiyat: {{request.Price}} TL
+Kategori: {{request.Category}}
+Ürün linki: {{request.ProductUrl}}
+Açıklama: {{request.Description}}
+Yorumlar: {{request.ReviewsText}}
+Kullanıcı aylık bütçesi: {{request.MonthlyBudget}} TL
 
-            Analiz ederken özellikle şunlara dikkat et:
-            - "Sadece bugün", "sınırlı stok", "kaçırılmayacak fırsat", "fenomenlerin favorisi" gibi manipülatif ifadeler
-            - Çok genel, tekrar eden veya aşırı olumlu yorumlar
-            - Fiyatın bütçeye oranı
-            - Ani ve duygusal satın alma riski
+Analizde özellikle şunlara dikkat et:
+- "Sadece bugün", "sınırlı stok", "kaçırılmayacak fırsat", "fenomenlerin favorisi" gibi manipülatif ifadeler
+- Çok genel, tekrar eden veya aşırı olumlu yorumlar
+- Fiyatın kullanıcının aylık bütçesine oranı
+- Ani ve duygusal satın alma riski
 
-            Yanıtını Türkçe ver.
-            Kısa ama net bir finalRecommendation üret.
-            FinalRecommendation en fazla 5 cümle olsun.
-            Önce kısa karar ver: "Bekle", "Karşılaştır", "Mantıklı görünüyor" gibi.
-            Sonra 2-3 cümleyle gerekçelendir.
-            """;
+Yanıtını Türkçe ver.
+
+Yanıt formatın kesinlikle şu yapıda olsun:
+Karar: Bekle / Karşılaştır / Mantıklı görünüyor.
+Sebep: En fazla 2 kısa cümleyle açıkla.
+Öneri: Kullanıcıya tek net aksiyon ver.
+
+Kurallar:
+- Toplam cevap en fazla 4 cümle olsun.
+- FinalRecommendation gibi başlıklar yazma.
+- Markdown, yıldızlı metin, uzun liste veya maddeleme kullanma.
+- Kullanıcıyı tamamen alışverişten vazgeçirmeye çalışma; daha bilinçli karar vermesine yardım et.
+""";
 
             var response = await _client.Models.GenerateContentAsync(
                 model: "gemini-2.5-flash",
@@ -76,7 +82,11 @@ public class GeminiService : IGeminiService
             var averageRisk = (manipulationRisk + fakeReviewRisk + impulseRisk + overpricedRisk) / 4;
             var decisionScore = Math.Max(0, 100 - averageRisk);
 
-            var isCoolDownSuggested = manipulationRisk >= 75 || impulseRisk >= 70 || decisionScore < 45;
+            var isCoolDownSuggested =
+                manipulationRisk >= 75 ||
+                impulseRisk >= 70 ||
+                decisionScore < 45 ||
+                aiText.Contains("Bekle", StringComparison.OrdinalIgnoreCase);
 
             return new ProductAnalysisResponse
             {
@@ -85,7 +95,7 @@ public class GeminiService : IGeminiService
                 OverpricedRisk = overpricedRisk,
                 ImpulseRisk = impulseRisk,
                 DecisionScore = decisionScore,
-                FinalRecommendation = aiText,
+                FinalRecommendation = aiText.Trim(),
                 IsCoolDownSuggested = isCoolDownSuggested,
                 CoolDownReason = isCoolDownSuggested
                     ? "Yüksek manipülasyon veya dürtüsel alışveriş riski tespit edildi. 24 saatlik düşünme süresi önerilir."
@@ -105,12 +115,30 @@ public class GeminiService : IGeminiService
         {
             _logger.LogInformation("Gemini'a soru soruluyor...");
 
+            var systemPrompt = $"""
+Sen MindCart AI adlı kısa ve net cevap veren bir alışveriş karar asistanısın.
+
+Görevin:
+Kullanıcının bütçesine, ürün fiyatına ve satın alma zamanına göre pratik karar vermesine yardım etmek.
+
+Kurallar:
+- Cevabın en fazla 4 cümle olsun.
+- Madde madde uzun açıklama yapma.
+- Önce net karar ver: "Alabilirsin", "Bekle", "Karşılaştır" veya "Bütçeyi artır".
+- Sonra çok kısa gerekçe yaz.
+- Markdown, yıldızlı metin veya başlık kullanma.
+- Türkçe cevap ver.
+
+Kullanıcı sorusu:
+{prompt}
+""";
+
             var response = await _client.Models.GenerateContentAsync(
                 model: "gemini-2.5-flash",
-                contents: prompt
+                contents: systemPrompt
             );
 
-            return response.Text ?? string.Empty;
+            return response.Text?.Trim() ?? string.Empty;
         }
         catch (Exception ex)
         {
@@ -155,7 +183,10 @@ public class GeminiService : IGeminiService
             "%70",
             "%80",
             "herkes alıyor",
-            "çok satan"
+            "çok satan",
+            "viral",
+            "popüler ürün",
+            "sezon indirimi"
         };
 
         var risk = 30;
@@ -184,7 +215,8 @@ public class GeminiService : IGeminiService
             "hayatımı değiştirdi",
             "efsane",
             "çok iyi",
-            "kesin alın"
+            "kesin alın",
+            "beklediğimden iyi"
         };
 
         var risk = 30;
@@ -226,7 +258,7 @@ public class GeminiService : IGeminiService
 
         var categoryLower = category?.ToLower() ?? "";
 
-        if (categoryLower.Contains("cosmetic") || categoryLower.Contains("kozmetik"))
+        if (categoryLower.Contains("cosmetic") || categoryLower.Contains("kozmetik") || categoryLower.Contains("beauty"))
         {
             return price > 1000 ? 65 : 45;
         }
@@ -234,6 +266,21 @@ public class GeminiService : IGeminiService
         if (categoryLower.Contains("electronics") || categoryLower.Contains("elektronik"))
         {
             return price > 3000 ? 60 : 40;
+        }
+
+        if (categoryLower.Contains("fashion"))
+        {
+            return price > 1500 ? 60 : 40;
+        }
+
+        if (categoryLower.Contains("education"))
+        {
+            return price > 1000 ? 45 : 25;
+        }
+
+        if (categoryLower.Contains("home") || categoryLower.Contains("sleep"))
+        {
+            return price > 1000 ? 55 : 35;
         }
 
         return price > 2000 ? 60 : 40;
