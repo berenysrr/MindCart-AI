@@ -2,8 +2,11 @@ using Microsoft.EntityFrameworkCore;
 using MindCartAI.Api.Data;
 using MindCartAI.Api.Services;
 using MindCartAI.Api.Options;
+using MindCartAI.Api.Repositories; // Repository namespace'ini ekledik
 
 var builder = WebApplication.CreateBuilder(args);
+
+// --- CORS AYARLARI ---
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -14,25 +17,33 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Controllers + Swagger
+// --- CONTROLLERS + SWAGGER ---
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Database
+// --- DATABASE ---
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Gemini Options
+// --- CONFIGURATIONS & OPTIONS ---
 builder.Services.Configure<GeminiOptions>(
     builder.Configuration.GetSection("Gemini"));
 
-// Gemini Service
+// --- DEPENDENCY INJECTION (SERVIS KAYITLARI) ---
+
+// Gemini Service (AI Mantığı)
 builder.Services.AddScoped<IGeminiService, GeminiService>();
+
+// Repository Layer (Veritabanı Mantığı)
+// Beren'in istediği kritik ekleme burasıdır:
+builder.Services.AddScoped<IProductAnalysisRepository, ProductAnalysisRepository>();
 
 var app = builder.Build();
 
-// Swagger UI
+// --- HTTP REQUEST PIPELINE ---
+
+// Swagger UI (Sadece Geliştirme Ortamında)
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -41,6 +52,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// CORS Politikası (Frontend ile bağlantı için şart)
 app.UseCors("AllowFrontend");
 
 app.UseAuthorization();
