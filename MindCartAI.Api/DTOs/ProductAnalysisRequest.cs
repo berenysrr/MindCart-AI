@@ -6,6 +6,8 @@ public class ProductAnalysisRequest
 
     public decimal Price { get; set; }
 
+    public int UserId { get; set; }
+
     public string Category { get; set; } = string.Empty;
 
     public string? ProductUrl { get; set; }

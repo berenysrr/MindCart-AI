@@ -14,5 +14,8 @@ public class CoolDownItem
 
     public string Status { get; set; } = "Active";
 
+    public int UserId { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.Now;
+
 }
