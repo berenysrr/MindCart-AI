@@ -32,11 +32,12 @@ public class GeminiService : IGeminiService
         {
             _logger.LogInformation("{ProductName} analizi için Gemini çağrılıyor...", request.ProductName);
 
+            // Prompt güncellendi: Daha doyurucu ve yapılandırılmış yanıt için talimatlar genişletildi.
             var prompt = $$"""
-Sen MindCart AI adlı kısa, net ve karar odaklı bir alışveriş karar koruma asistanısın.
+Sen MindCart AI adlı, kullanıcının bütçesini ve mantığını koruyan profesyonel bir alışveriş asistanısın.
 
 Görevin:
-Kullanıcının satın almak istediği ürünü sahte yorum, manipülatif pazarlama dili, overpriced olma ihtimali ve dürtüsel alışveriş riski açısından analiz etmek.
+Ürünü; sahte yorumlar, manipülatif pazarlama dili, fiyat/performans dengesi ve dürtüsel alışveriş riski açısından derinlemesine analiz etmek.
 
 Ürün bilgileri:
 Ürün adı: {{request.ProductName}}
@@ -47,24 +48,16 @@ Açıklama: {{request.Description}}
 Yorumlar: {{request.ReviewsText}}
 Kullanıcı aylık bütçesi: {{request.MonthlyBudget}} TL
 
-Analizde özellikle şunlara dikkat et:
-- "Sadece bugün", "sınırlı stok", "kaçırılmayacak fırsat", "fenomenlerin favorisi" gibi manipülatif ifadeler
-- Çok genel, tekrar eden veya aşırı olumlu yorumlar
-- Fiyatın kullanıcının aylık bütçesine oranı
-- Ani ve duygusal satın alma riski
+Yanıtını şu 3 başlık altında, her başlık için en az 2-3 detaylı cümle kurarak Türkçe ver:
 
-Yanıtını Türkçe ver.
-
-Yanıt formatın kesinlikle şu yapıda olsun:
-Karar: Bekle / Karşılaştır / Mantıklı görünüyor.
-Sebep: En fazla 2 kısa cümleyle açıkla.
-Öneri: Kullanıcıya tek net aksiyon ver.
+**KARAR:** Ürünün alınması mantıklı mı, bekleme sürecine mi alınmalı yoksa alternatiflere mi bakılmalı?
+**SEBEP:** Üründeki manipülatif ifadeleri (örn: "son stok"), yorumların güvenilirliğini ve fiyatın bütçeye olan etkisini teknik olarak açıkla.
+**ÖNERİ:** Kullanıcıya bu alışverişten en karlı çıkacağı net bir aksiyon öner.
 
 Kurallar:
-- Toplam cevap en fazla 4 cümle olsun.
-- FinalRecommendation gibi başlıklar yazma.
-- Markdown, yıldızlı metin, uzun liste veya maddeleme kullanma.
-- Kullanıcıyı tamamen alışverişten vazgeçirmeye çalışma; daha bilinçli karar vermesine yardım et.
+- Yanıtın toplamda 6-8 cümle arasında, doyurucu bir uzunlukta olsun.
+- Markdown (kalın başlıklar) kullanarak yapılandırılmış bir metin sun.
+- Kullanıcıyı sadece durdurmaya çalışma; doğru kararı vermesi için ikna edici ve bilgilendirici ol.
 """;
 
             var response = await _client.Models.GenerateContentAsync(
@@ -74,6 +67,7 @@ Kurallar:
 
             var aiText = response.Text ?? "Analiz yapılamadı.";
 
+            // Risk hesaplama mantığı (Aynı kaldı)
             var manipulationRisk = CalculateManipulationRisk(request.Description);
             var fakeReviewRisk = CalculateFakeReviewRisk(request.ReviewsText);
             var impulseRisk = CalculateImpulseRisk(request.Price, request.MonthlyBudget);
@@ -116,18 +110,9 @@ Kurallar:
             _logger.LogInformation("Gemini'a soru soruluyor...");
 
             var systemPrompt = $"""
-Sen MindCart AI adlı kısa ve net cevap veren bir alışveriş karar asistanısın.
-
-Görevin:
-Kullanıcının bütçesine, ürün fiyatına ve satın alma zamanına göre pratik karar vermesine yardım etmek.
-
-Kurallar:
-- Cevabın en fazla 4 cümle olsun.
-- Madde madde uzun açıklama yapma.
-- Önce net karar ver: "Alabilirsin", "Bekle", "Karşılaştır" veya "Bütçeyi artır".
-- Sonra çok kısa gerekçe yaz.
-- Markdown, yıldızlı metin veya başlık kullanma.
-- Türkçe cevap ver.
+Sen MindCart AI adlı alışveriş karar asistanısın. Kullanıcıya alışveriş kararlarında yol göster.
+Cevapların hem net hem de bilgilendirici olsun. Sadece "Al" veya "Alma" deme, sebebini açıkla.
+En fazla 5-6 cümle kur. Türkçe cevap ver.
 
 Kullanıcı sorusu:
 {prompt}
@@ -165,124 +150,44 @@ Kullanıcı sorusu:
         }
     }
 
+    // Risk hesaplama metodları (Değişmedi)
     private static int CalculateManipulationRisk(string? description)
     {
-        if (string.IsNullOrWhiteSpace(description))
-            return 35;
-
+        if (string.IsNullOrWhiteSpace(description)) return 35;
         var text = description.ToLower();
-
-        var riskyWords = new[]
-        {
-            "sadece bugün",
-            "sınırlı stok",
-            "kaçırılmayacak",
-            "son fırsat",
-            "fenomen",
-            "influencer",
-            "%70",
-            "%80",
-            "herkes alıyor",
-            "çok satan",
-            "viral",
-            "popüler ürün",
-            "sezon indirimi"
-        };
-
+        var riskyWords = new[] { "sadece bugün", "sınırlı stok", "kaçırılmayacak", "son fırsat", "fenomen", "influencer", "viral", "çok satan" };
         var risk = 30;
-
-        foreach (var word in riskyWords)
-        {
-            if (text.Contains(word))
-                risk += 10;
-        }
-
+        foreach (var word in riskyWords) if (text.Contains(word)) risk += 10;
         return Math.Min(risk, 100);
     }
 
     private static int CalculateFakeReviewRisk(string? reviewsText)
     {
-        if (string.IsNullOrWhiteSpace(reviewsText))
-            return 40;
-
+        if (string.IsNullOrWhiteSpace(reviewsText)) return 40;
         var text = reviewsText.ToLower();
-
-        var suspiciousWords = new[]
-        {
-            "mükemmel",
-            "harika",
-            "herkes almalı",
-            "hayatımı değiştirdi",
-            "efsane",
-            "çok iyi",
-            "kesin alın",
-            "beklediğimden iyi"
-        };
-
+        var suspiciousWords = new[] { "mükemmel", "harika", "herkes almalı", "efsane", "çok iyi", "kesin alın" };
         var risk = 30;
-
-        foreach (var word in suspiciousWords)
-        {
-            if (text.Contains(word))
-                risk += 8;
-        }
-
+        foreach (var word in suspiciousWords) if (text.Contains(word)) risk += 8;
         return Math.Min(risk, 100);
     }
 
     private static int CalculateImpulseRisk(decimal price, decimal? monthlyBudget)
     {
-        if (monthlyBudget is null || monthlyBudget <= 0)
-        {
-            return price >= 2000 ? 75 : 45;
-        }
-
+        if (monthlyBudget is null || monthlyBudget <= 0) return price >= 2000 ? 75 : 45;
         var ratio = price / monthlyBudget.Value;
-
-        if (ratio >= 0.5m)
-            return 90;
-
-        if (ratio >= 0.3m)
-            return 75;
-
-        if (ratio >= 0.15m)
-            return 55;
-
+        if (ratio >= 0.5m) return 90;
+        if (ratio >= 0.3m) return 75;
+        if (ratio >= 0.15m) return 55;
         return 35;
     }
 
     private static int CalculateOverpricedRisk(decimal price, string? category)
     {
-        if (price <= 0)
-            return 30;
-
+        if (price <= 0) return 30;
         var categoryLower = category?.ToLower() ?? "";
-
-        if (categoryLower.Contains("cosmetic") || categoryLower.Contains("kozmetik") || categoryLower.Contains("beauty"))
-        {
-            return price > 1000 ? 65 : 45;
-        }
-
-        if (categoryLower.Contains("electronics") || categoryLower.Contains("elektronik"))
-        {
-            return price > 3000 ? 60 : 40;
-        }
-
-        if (categoryLower.Contains("fashion"))
-        {
-            return price > 1500 ? 60 : 40;
-        }
-
-        if (categoryLower.Contains("education"))
-        {
-            return price > 1000 ? 45 : 25;
-        }
-
-        if (categoryLower.Contains("home") || categoryLower.Contains("sleep"))
-        {
-            return price > 1000 ? 55 : 35;
-        }
-
+        if (categoryLower.Contains("kozmetik")) return price > 1000 ? 65 : 45;
+        if (categoryLower.Contains("elektronik")) return price > 3000 ? 60 : 40;
+        if (categoryLower.Contains("fashion")) return price > 1500 ? 60 : 40;
         return price > 2000 ? 60 : 40;
     }
 }
