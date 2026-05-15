@@ -264,12 +264,21 @@ textarea {
 
 .hero-gradient {
   margin: 0 auto 22px;
-  font-size: clamp(50px, 7.2vw, 88px);
-  line-height: 0.97;
-  letter-spacing: -0.07em;
-  font-weight: 950;
+  font-family: 'Orbitron', sans-serif; 
+  
+  /* --- TAŞMAYI VE SIKIŞMAYI ÇÖZEN KRİTİK AYARLAR --- */
+  font-size: clamp(40px, 6vw, 72px);  /* Fontu çok hafif küçülterek ekrana sığdırdık */
+  line-height: 1.3;                   /* Satır arasını açtık, noktalar artık alttaki harfe çarpmayacak */
+  letter-spacing: 2px;                /* Harflerin arasını açarak fütüristik bir hava kattık */
+  font-weight: 800;                   /* Orbitron için en estetik kalınlık */
+  
   color: #ffffff;
-  text-shadow: 0 0 30px rgba(255, 255, 255, 0.08);
+  text-align: center;                 /* Başlığı tam ortalayalım */
+  
+  /* Siber neon parlama efektini de ekleyelim, harika dursun */
+  text-shadow: 
+    0 0 10px rgba(0, 242, 254, 0.6),  
+    0 0 30px rgba(0, 242, 254, 0.3);
 }
 
 .hero p {
@@ -2524,11 +2533,18 @@ body::before {
 }
 
 .mc-cooldown-hero h1 {
-  margin: 0;
-  font-size: clamp(48px, 5vw, 74px);
-  line-height: 0.95;
-  letter-spacing: -0.08em;
-  font-weight: 950;
+  margin: 0 0 15px 0; /* Alttaki paragrafla arasında kibar bir boşluk bırakıldı */
+  
+  /* --- COOLDOWN KORUMA FONTU (Orbitron) --- */
+  font-family: 'Orbitron', sans-serif;
+  
+  font-size: clamp(32px, 4.2vw, 58px); /* Orbitron geniş bir font olduğu için taşmayı önlemek adına dengelendi */
+  line-height: 1.1;                     /* Harflerin alt alta binerken birbirini ezmesi engellendi */
+  letter-spacing: 1px;                  /* O eski -0.08em'lik boğucu sıkışıklık giderildi, siber estetik katıldı */
+  font-weight: 800;                     /* Fontun en temiz ve okunaklı duran kalınlık değeri */
+  color: #ffffff;
+  
+  
 }
 
 .mc-cooldown-hero p {
@@ -3319,11 +3335,23 @@ body::before {
   padding-top: 18px;
 }
 
-.mc-history-hero-final {
-  max-width: 980px;
-  margin: 34px auto 34px;
-  text-align: center;
+/* --- GEÇMİŞ SAYFASI (HISTORY) HERO BAŞLIĞI --- */
+.mc-history-hero-final h1 {
+  margin: 0 0 15px 0; /* Paragrafla arasına kibar bir boşluk */
+  
+  /* --- RADAR / GEÇMİŞ FONTU (Orbitron) --- */
+  font-family: 'Orbitron', sans-serif;
+  
+  font-size: clamp(38px, 4.5vw, 64px); /* Geniş font yapısına göre dengelenmiş boyut */
+  line-height: 1.25;                    /* Satırların nefes alması için aralık genişletildi */
+  letter-spacing: 1px;                  /* Sıkışıklık tamamen kaldırıldı, siber hava katıldı */
+  font-weight: 800;
+  color: #ffffff;
+  
 }
+  
+
+
 
 .mc-history-hero-final .tag {
   margin-bottom: 18px;
@@ -3510,7 +3538,7 @@ body::before {
 
 .mc-chat-hero {
   max-width: 920px;
-  margin: 36px auto 30px;
+  margin: 0 0 15px 0;
   text-align: center;
 }
 
@@ -3918,3 +3946,79 @@ body {
 .risk-report {
   min-height: 720px !important;
 }
+/* --- BALONCUKLAR İÇİN SÜZÜLME ANİMASYONU --- */
+@keyframes floatAnimation {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px); /* 8 piksel yukarı süzülme (kibar ve şık bir hareket) */
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* Tüm baloncuklara ortak süzülme animasyonunu tanımlıyoruz */
+/* --- NEON BALONCUKLAR VE SÜZÜLME ANİMASYONU --- */
+
+@keyframes floatAnimation {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+
+/* Ortak Baloncuk Stili (Glassmorphism + Neon Base) */
+.risk-chip {
+  background: rgba(11, 17, 33, 0.75); /* Koyu siber arka plan */
+  backdrop-filter: blur(8px);        /* Arkasını hafif bulurlasın */
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 10px 18px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  animation: floatAnimation 4s ease-in-out infinite;
+}
+
+/* --- HER BALONCUK İÇİN ÖZEL NEON RENKLERİ --- */
+
+/* 1. Sahte Yorum (Neon Pembe/Mor) */
+.chip-left-top {
+  border: 1px solid rgba(255, 0, 204, 0.7);
+  box-shadow: 0 0 15px rgba(255, 0, 204, 0.3), inset 0 0 5px rgba(255, 0, 204, 0.2);
+  text-shadow: 0 0 5px rgba(255, 0, 204, 0.6);
+  animation-delay: 0s;
+  animation-duration: 3.8s;
+}
+
+/* 2. Manipülasyon (Neon Kırmızı/Turuncu) */
+.chip-right-top {
+  border: 1px solid rgba(255, 74, 0, 0.7);
+  box-shadow: 0 0 15px rgba(255, 74, 0, 0.3), inset 0 0 5px rgba(255, 74, 0, 0.2);
+  text-shadow: 0 0 5px rgba(255, 74, 0, 0.6);
+  animation-delay: 0.5s;
+  animation-duration: 4.2s;
+}
+
+/* 3. Fake İndirim (Neon Sarı) */
+.chip-left-bottom {
+  border: 1px solid rgba(255, 211, 0, 0.7);
+  box-shadow: 0 0 15px rgba(255, 211, 0, 0.3), inset 0 0 5px rgba(255, 211, 0, 0.2);
+  text-shadow: 0 0 5px rgba(255, 211, 0, 0.6);
+  animation-delay: 1s;
+  animation-duration: 4.5s;
+}
+
+/* 4. Dürtüsel Risk (Neon Mavi/Cyan) */
+.chip-right-bottom {
+  border: 1px solid rgba(0, 242, 254, 0.7);
+  box-shadow: 0 0 15px rgba(0, 242, 254, 0.3), inset 0 0 5px rgba(0, 242, 254, 0.2);
+  text-shadow: 0 0 5px rgba(0, 242, 254, 0.6);
+  animation-delay: 1.5s;
+  animation-duration: 3.9s;
+}
+
