@@ -24,7 +24,16 @@ builder.Services.AddSwaggerGen();
 
 // --- DATABASE ---
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    if (builder.Environment.IsDevelopment())
+    {
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    }
+    else
+    {
+        options.UseInMemoryDatabase("MindCartLiveDb");
+    }
+});
 
 // --- CONFIGURATIONS & OPTIONS ---
 builder.Services.Configure<GeminiOptions>(
