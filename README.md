@@ -3,7 +3,7 @@
 # 🧠 MINDCART AI
 ### *Bilinçli Alışverişin Geleceği*
 
-<img src="https://readme-typing-svg.demolab.com?font=Orbitron&size=24&pause=1000&color=8A2BE2&center=true&vCenter=true&width=800&lines=AI+Destekli+Alışveriş+Koruma+Sistemi;Sahte+Yorumları+ve+Manipülasyonu+Tespit+Et;Dürtüsel+Satın+Almayı+Engelle;Satın+Almadan+Önce+Bir+Kez+Daha+Düşün." />
+font=Orbitron&size=24&pause=1000&color=8A2BE2&center=true&vCenter=true&width=800&lines=AI+Destekli+Alışveriş+Koruma+Sistemi;Sahte+Yorumları+ve+Manipülasyonu+Tespit+Et;Dürtüsel+Satın+Almayı+Engelle;Satın+Almadan+Önce+Bir+Kez+Daha+Düşün." />
 
 <br>
 
