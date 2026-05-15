@@ -1,4 +1,6 @@
-const API_BASE_URL = "http://localhost:5222/api";
+const API_BASE_URL = `${
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5222"
+}/api`;
 
 export async function analyzeProduct(productData) {
   const response = await fetch(`${API_BASE_URL}/product-analysis/analyze`, {
@@ -34,4 +36,20 @@ export async function getCooldownItems() {
   }
 
   return response.json();
+}
+
+export async function askMindCart(question) {
+  const response = await fetch(`${API_BASE_URL}/mindcart/ask`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ prompt: question }),
+  });
+
+  if (!response.ok) {
+    throw new Error("MindCart chat failed");
+  }
+
+  return response.text();
 }
