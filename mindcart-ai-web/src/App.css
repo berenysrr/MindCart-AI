@@ -1,4 +1,6 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
 * {
+
   box-sizing: border-box;
 }
 
@@ -1223,7 +1225,7 @@ textarea {
    Bu bölüm mevcut class adlarını bozmaz; sadece görünümü premiumlaştırır.
    ========================================================= */
 
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
+
 
 :root {
   --bg: #050816;
@@ -3889,4 +3891,30 @@ body {
   .mc-history-table-head {
     display: none !important;
   }
+}
+.page {
+  padding: 18px clamp(18px, 2.4vw, 48px) 70px !important;
+}
+
+.navbar {
+  max-width: 1500px !important;
+  margin-inline: auto !important;
+}
+
+.page-section,
+.center-page {
+  max-width: 1500px !important;
+  margin-inline: auto !important;
+}
+
+.hero-gradient {
+  font-size: clamp(72px, 7.4vw, 132px) !important;
+}
+
+.analysis-layout {
+  grid-template-columns: minmax(480px, 0.9fr) minmax(760px, 1.1fr) !important;
+}
+
+.risk-report {
+  min-height: 720px !important;
 }
