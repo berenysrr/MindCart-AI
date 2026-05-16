@@ -1389,7 +1389,9 @@ function App() {
         <section className="page-section mc-chat-page-final">
           <section className="mc-chat-hero">
             <p className="tag">MindCart Chat Assistant</p>
-            <h1>AI DESTEKLİ ALIŞVERİŞ ASİSTANI</h1>
+            <h1 className="hero-title" style={{ color: '#ffffff', WebkitTextFillColor: '#ffffff', display: 'block' 
+        }}
+            >AI DESTEKLİ ALIŞVERİŞ ASİSTANI</h1>
             <p>
               Ürün, bütçe ve satın alma kararların hakkında MindCart AI ile konuş.
               Gereksiz harcamaları, manipülasyon risklerini ve alternatifleri birlikte değerlendir.
