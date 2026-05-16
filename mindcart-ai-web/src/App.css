@@ -3545,14 +3545,25 @@ body::before {
 }
 
 .mc-chat-hero {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 5rem;               /* Chat ekranında mesaj alanına yer kalsın diye ideal siber boyut */
-  font-weight: 900;
-  letter-spacing: -px;
-  color: #ffffff;
-  margin-bottom: 2rem;
+  max-width: 920px;
+  margin: 0 auto 15px auto;
+  text-align: center;
 }
-
+.mc-chat-hero h1 {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 3.5rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  margin-bottom: 16px;
+  text-transform: none;
+  
+  /* 🎯 RENK ÇAKIŞMASINI EZEN KRİTİK DOKUNUŞLAR: */
+  color: #ffffff !important;           /* Başlığı kesin olarak saf beyaz yapar */
+  -webkit-text-fill-color: #ffffff !important; /* Bazı tarayıcıların (Chrome/Safari) içini siyah doldurmasını engeller */
+  
+ 
+}
 .mc-chat-hero .tag {
   margin-bottom: 18px;
 }
