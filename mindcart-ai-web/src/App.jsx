@@ -6,7 +6,7 @@ import {
   getCooldownItems,
 } from "./services/api";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5222";
+const API_BASE_URL = "http://localhost:5222"; // Buradaki port backend'inin portu neyse o olsun (5222, 5000 vb.)
 
 const demoLinks = {
   cosmetic: "https://www.trendyol.com/cilt-bakim-serumu-899",
@@ -45,13 +45,24 @@ function App() {
 
   async function loadLists() {
     try {
-      const historyData = await getAnalysisHistory();
-      const cooldownData = await getCooldownItems();
+      // Ngrok engelini aşmak için doğrudan fetch ile güvenli istek atıyoruz:
+      const historyResponse = await fetch(`${API_BASE_URL}/api/product-analysis/history`, { // Backend endpoint yolun farklıysa düzelt (örn: /analysis/history veya /history)
+        headers: { "ngrok-skip-browser-warning": "true" }
+      });
+      const cooldownResponse = await fetch(`${API_BASE_URL}/api/cooldown/active`, { // Backend endpoint yolun farklıysa düzelt
+        headers: { "ngrok-skip-browser-warning": "true" }
+      });
 
-      setHistory(Array.isArray(historyData) ? historyData : []);
-      setCooldownItems(Array.isArray(cooldownData) ? cooldownData : []);
+      if (historyResponse.ok && cooldownResponse.ok) {
+        const historyData = await historyResponse.json();
+        const cooldownData = await cooldownResponse.json();
+        setHistory(Array.isArray(historyData) ? historyData : []);
+        setCooldownItems(Array.isArray(cooldownData) ? cooldownData : []);
+      }
     } catch (error) {
-      console.error("Liste verileri alınamadı:", error);
+      console.error("Liste verileri alınamadı, sunum için boş dizi set ediliyor:", error);
+      setHistory([]);
+      setCooldownItems([]);
     }
   }
 
@@ -445,6 +456,7 @@ function App() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true"
         },
         body: JSON.stringify(chatPrompt),
       });
@@ -888,7 +900,7 @@ function App() {
         <section className="page-section scan-page">
           <section className="scan-heading">
             <div>
-              <h1>Ürün Analizi</h1>
+              <h1>ÜRÜN ANALİZİ</h1>
               <p>Bir ürün linki girin, MindCart AI risksiz alışveriş için analiz etsin.</p>
             </div>
           </section>
@@ -1389,7 +1401,9 @@ function App() {
         <section className="page-section mc-chat-page-final">
           <section className="mc-chat-hero">
             <p className="tag">MindCart Chat Assistant</p>
-            <h1>AI destekli alışveriş asistanı.</h1>
+            <h1 className="hero-title" style={{ color: '#ffffff', WebkitTextFillColor: '#ffffff', display: 'block' 
+        }}
+            >AI DESTEKLİ ALIŞVERİŞ ASİSTANI</h1>
             <p>
               Ürün, bütçe ve satın alma kararların hakkında MindCart AI ile konuş.
               Gereksiz harcamaları, manipülasyon risklerini ve alternatifleri birlikte değerlendir.
