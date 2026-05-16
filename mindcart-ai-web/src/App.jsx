@@ -888,7 +888,7 @@ function App() {
         <section className="page-section scan-page">
           <section className="scan-heading">
             <div>
-              <h1>Ürün Analizi</h1>
+              <h1>ÜRÜN ANALİZİ</h1>
               <p>Bir ürün linki girin, MindCart AI risksiz alışveriş için analiz etsin.</p>
             </div>
           </section>
@@ -1389,7 +1389,7 @@ function App() {
         <section className="page-section mc-chat-page-final">
           <section className="mc-chat-hero">
             <p className="tag">MindCart Chat Assistant</p>
-            <h1>AI destekli alışveriş asistanı.</h1>
+            <h1>AI DESTEKLİ ALIŞVERİŞ ASİSTANI</h1>
             <p>
               Ürün, bütçe ve satın alma kararların hakkında MindCart AI ile konuş.
               Gereksiz harcamaları, manipülasyon risklerini ve alternatifleri birlikte değerlendir.

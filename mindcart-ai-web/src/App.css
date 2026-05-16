@@ -428,7 +428,15 @@ textarea {
 }
 
 .scan-heading {
-  margin: 6px 0 20px;
+  font-family: 'Orbitron', sans-serif;
+    font-size: 5rem;                 /* Tam görsellerdeki gibi devasa boyut */
+    font-weight: 900;                 /* Ekstra kalın ve vurucu durması için */
+    text-transform: uppercase;        /* Tüm harfleri otomatik büyük yapar */
+    line-height: 1.1;                 /* Satır aralarını birbirine yakınlaştırır */
+    letter-spacing: -2px;             /* Harfleri fütüristik panel tarzı sıkıştırır */
+    color: #ffffff;                   /* Ana renk saf beyaz */
+    text-align: center;               /* Ortalanmış metin */
+    margin-bottom: 2rem;
 }
 
 .scan-heading h1,
@@ -3537,9 +3545,12 @@ body::before {
 }
 
 .mc-chat-hero {
-  max-width: 920px;
-  margin: 0 0 15px 0;
-  text-align: center;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 5rem;               /* Chat ekranında mesaj alanına yer kalsın diye ideal siber boyut */
+  font-weight: 900;
+  letter-spacing: -px;
+  color: #ffffff;
+  margin-bottom: 2rem;
 }
 
 .mc-chat-hero .tag {
