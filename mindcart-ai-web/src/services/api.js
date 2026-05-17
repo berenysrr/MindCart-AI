@@ -1,4 +1,6 @@
-const API_BASE_URL = "https://buggy-stadium-rekindle.ngrok-free.dev";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://mindcart-ai-production.up.railway.app/api";
 
 export async function analyzeProduct(productData) {
   const response = await fetch(`${API_BASE_URL}/product-analysis/analyze`, {
