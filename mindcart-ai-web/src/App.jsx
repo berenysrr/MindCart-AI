@@ -6,7 +6,7 @@ import {
   getCooldownItems,
 } from "./services/api";
 
-const API_BASE_URL = "http://localhost:5222"; // Buradaki port backend'inin portu neyse o olsun (5222, 5000 vb.)
+const API_BASE_URL = "https://mindcart-ai-production.up.railway.app";
 
 const demoLinks = {
   cosmetic: "https://www.trendyol.com/cilt-bakim-serumu-899",
